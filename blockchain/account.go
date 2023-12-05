@@ -3,7 +3,6 @@ package blockchain
 import (
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,8 +12,8 @@ import (
 )
 
 type AccountId struct {
-	ChainId ChainId `json:"chainId"`
-	Address string  `json:"address"`
+	ChainId ChainId
+	Address string
 }
 
 var (
@@ -89,14 +88,8 @@ func MustParseAccountId(s string) AccountId {
 	return a
 }
 
-func (a AccountId) MarshalText() ([]byte, error) {
-	if err := a.Validate(); err != nil {
-		return nil, err
-	}
-
-	return []byte(a.String()), nil
-}
-
+// UnmarshalText implements the encoding.TextUnmarshaler interface for XML
+// deserialization
 func (a *AccountId) UnmarshalText(data []byte) error {
 	accountId, err := ParseAccountId(string(data))
 	if err != nil {
@@ -106,28 +99,44 @@ func (a *AccountId) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func (a *AccountId) UnmarshalJSON(data []byte) error {
-	type AccountIdAlias AccountId
-	aa := (*AccountIdAlias)(a)
-	if err := json.Unmarshal(data, &aa); err != nil {
-		return err
-	}
-
+// MarshalText implements the encoding.TextMarshaler interface for XML
+// serialization
+func (a AccountId) MarshalText() ([]byte, error) {
 	if err := a.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 
+	return []byte(a.String()), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (a *AccountId) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+
+	str, err := unquoteIfQuoted(data)
+	if err != nil {
+		return fmt.Errorf("error decoding string '%s': %s", data, err)
+	}
+
+	accountId, err := ParseAccountId(str)
+	if err != nil {
+		return err
+	}
+	*a = accountId
 	return nil
 }
 
+// MarshalJSON implements the json.Marshaler interface.
 func (a AccountId) MarshalJSON() ([]byte, error) {
 	if err := a.Validate(); err != nil {
 		return nil, err
 	}
 
-	type AccountIdAlias AccountId
-	ca := (AccountIdAlias)(a)
-	return json.Marshal(ca)
+	str := "\"" + a.String() + "\""
+
+	return []byte(str), nil
 }
 
 func (a AccountId) Value() (driver.Value, error) {

@@ -3,7 +3,6 @@ package blockchain
 import (
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,8 +12,8 @@ import (
 )
 
 type TransactionId struct {
-	ChainId ChainId `json:"chainId"`
-	Hash    string  `json:"hash"`
+	ChainId ChainId
+	Hash    string
 }
 
 var (
@@ -89,14 +88,8 @@ func MustParseTransactionId(s string) TransactionId {
 	return t
 }
 
-func (t TransactionId) MarshalText() ([]byte, error) {
-	if err := t.Validate(); err != nil {
-		return nil, err
-	}
-
-	return []byte(t.String()), nil
-}
-
+// UnmarshalText implements the encoding.TextUnmarshaler interface for XML
+// deserialization
 func (t *TransactionId) UnmarshalText(data []byte) error {
 	TransactionId, err := ParseTransactionId(string(data))
 	if err != nil {
@@ -106,28 +99,44 @@ func (t *TransactionId) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func (t *TransactionId) UnmarshalJSON(data []byte) error {
-	type TransactionIdAlias TransactionId
-	aa := (*TransactionIdAlias)(t)
-	if err := json.Unmarshal(data, &aa); err != nil {
-		return err
-	}
-
+// MarshalText implements the encoding.TextMarshaler interface for XML
+// serialization
+func (t TransactionId) MarshalText() ([]byte, error) {
 	if err := t.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 
+	return []byte(t.String()), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (t *TransactionId) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+
+	str, err := unquoteIfQuoted(data)
+	if err != nil {
+		return fmt.Errorf("error decoding string '%s': %s", data, err)
+	}
+
+	transactionId, err := ParseTransactionId(str)
+	if err != nil {
+		return err
+	}
+	*t = transactionId
 	return nil
 }
 
+// MarshalJSON implements the json.Marshaler interface.
 func (t TransactionId) MarshalJSON() ([]byte, error) {
 	if err := t.Validate(); err != nil {
 		return nil, err
 	}
 
-	type TransactionIdAlias TransactionId
-	ca := (TransactionIdAlias)(t)
-	return json.Marshal(ca)
+	str := "\"" + t.String() + "\""
+
+	return []byte(str), nil
 }
 
 func (t TransactionId) Value() (driver.Value, error) {

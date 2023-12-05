@@ -3,7 +3,6 @@ package blockchain
 import (
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,9 +12,9 @@ import (
 )
 
 type AssetId struct {
-	ChainId   ChainId `json:"chainId"`
-	Namespace string  `json:"namespace"`
-	Reference string  `json:"reference"`
+	ChainId   ChainId
+	Namespace string
+	Reference string
 }
 
 var (
@@ -101,14 +100,8 @@ func MustParseAssetId(s string) AssetId {
 	return a
 }
 
-func (a AssetId) MarshalText() ([]byte, error) {
-	if err := a.Validate(); err != nil {
-		return nil, err
-	}
-
-	return []byte(a.String()), nil
-}
-
+// UnmarshalText implements the encoding.TextUnmarshaler interface for XML
+// deserialization
 func (a *AssetId) UnmarshalText(data []byte) error {
 	assetId, err := ParseAssetId(string(data))
 	if err != nil {
@@ -118,28 +111,44 @@ func (a *AssetId) UnmarshalText(data []byte) error {
 	return nil
 }
 
-func (a *AssetId) UnmarshalJSON(data []byte) error {
-	type AssetIdAlias AssetId
-	aa := (*AssetIdAlias)(a)
-	if err := json.Unmarshal(data, &aa); err != nil {
-		return err
-	}
-
+// MarshalText implements the encoding.TextMarshaler interface for XML
+// serialization
+func (a AssetId) MarshalText() ([]byte, error) {
 	if err := a.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 
+	return []byte(a.String()), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (a *AssetId) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+
+	str, err := unquoteIfQuoted(data)
+	if err != nil {
+		return fmt.Errorf("error decoding string '%s': %s", data, err)
+	}
+
+	assetId, err := ParseAssetId(str)
+	if err != nil {
+		return err
+	}
+	*a = assetId
 	return nil
 }
 
+// MarshalJSON implements the json.Marshaler interface.
 func (a AssetId) MarshalJSON() ([]byte, error) {
 	if err := a.Validate(); err != nil {
 		return nil, err
 	}
 
-	type AssetIdAlias AssetId
-	ca := (AssetIdAlias)(a)
-	return json.Marshal(ca)
+	str := "\"" + a.String() + "\""
+
+	return []byte(str), nil
 }
 
 func (a AssetId) Value() (driver.Value, error) {

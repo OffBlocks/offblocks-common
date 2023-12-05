@@ -3,7 +3,6 @@ package blockchain
 import (
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -13,8 +12,8 @@ import (
 )
 
 type ChainId struct {
-	Namespace string `json:"namespace"`
-	Reference string `json:"reference"`
+	Namespace string
+	Reference string
 }
 
 var (
@@ -90,14 +89,8 @@ func MustParseChainId(s string) ChainId {
 	return c
 }
 
-func (c ChainId) MarshalText() ([]byte, error) {
-	if err := c.Validate(); err != nil {
-		return nil, err
-	}
-
-	return []byte(c.String()), nil
-}
-
+// UnmarshalText implements the encoding.TextUnmarshaler interface for XML
+// deserialization
 func (c *ChainId) UnmarshalText(data []byte) error {
 	chainId, err := ParseChainId(string(data))
 	if err != nil {
@@ -107,28 +100,44 @@ func (c *ChainId) UnmarshalText(data []byte) error {
 	return nil
 }
 
+// MarshalText implements the encoding.TextMarshaler interface for XML
+// serialization
+func (c ChainId) MarshalText() ([]byte, error) {
+	if err := c.Validate(); err != nil {
+		return nil, err
+	}
+
+	return []byte(c.String()), nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (c *ChainId) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+
+	str, err := unquoteIfQuoted(data)
+	if err != nil {
+		return fmt.Errorf("error decoding string '%s': %s", data, err)
+	}
+
+	chainId, err := ParseChainId(str)
+	if err != nil {
+		return err
+	}
+	*c = chainId
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaler interface.
 func (c ChainId) MarshalJSON() ([]byte, error) {
 	if err := c.Validate(); err != nil {
 		return nil, err
 	}
 
-	type ChainIdAlias ChainId
-	ca := (ChainIdAlias)(c)
-	return json.Marshal(ca)
-}
+	str := "\"" + c.String() + "\""
 
-func (c *ChainId) UnmarshalJSON(data []byte) error {
-	type ChainIdAlias ChainId
-	ca := (*ChainIdAlias)(c)
-	if err := json.Unmarshal(data, &ca); err != nil {
-		return err
-	}
-
-	if err := c.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+	return []byte(str), nil
 }
 
 func (c ChainId) Value() (driver.Value, error) {
@@ -164,4 +173,24 @@ func (c *ChainId) UnmarshalGQL(v interface{}) error {
 	}
 
 	return nil
+}
+
+func unquoteIfQuoted(value interface{}) (string, error) {
+	var bytes []byte
+
+	switch v := value.(type) {
+	case string:
+		bytes = []byte(v)
+	case []byte:
+		bytes = v
+	default:
+		return "", fmt.Errorf("could not convert value '%+v' to byte array of type '%T'",
+			value, value)
+	}
+
+	// If the amount is quoted, strip the quotes
+	if len(bytes) > 2 && bytes[0] == '"' && bytes[len(bytes)-1] == '"' {
+		bytes = bytes[1 : len(bytes)-1]
+	}
+	return string(bytes), nil
 }
