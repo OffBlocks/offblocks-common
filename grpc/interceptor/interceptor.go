@@ -22,10 +22,9 @@ func ClientIdPropagationUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		clientId, err := auth.Context{Context: ctx}.ClientId()
-		if err != nil {
-			return err
+		if err == nil {
+			ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
 		}
-		ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
 		return invoker(ctx, method, req, reply, cc, opts...)
 	}
 }
@@ -40,10 +39,9 @@ func ClientIdPropagationStreamClientInterceptor() grpc.StreamClientInterceptor {
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
 		clientId, err := auth.Context{Context: ctx}.ClientId()
-		if err != nil {
-			return nil, err
+		if err == nil {
+			ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
 		}
-		ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
 		return streamer(ctx, desc, cc, method, opts...)
 	}
 }
