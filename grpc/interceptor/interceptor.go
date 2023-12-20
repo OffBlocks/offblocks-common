@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/offblocks/offblocks-common/auth"
 	"github.com/offblocks/offblocks-common/errors"
+	"github.com/offblocks/offblocks-common/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -72,7 +73,7 @@ func ClientIdPropagationUnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			if err != nil {
 				return nil, errors.ErrUnauthorised
 			}
-			ctx = auth.WithClientId(ctx, clientId)
+			ctx = auth.WithClientId(ctx, types.UUID{UUID: clientId})
 		}
 		return handler(ctx, req)
 	}
@@ -94,7 +95,7 @@ func ClientIdPropagationStreamServerInterceptor() grpc.StreamServerInterceptor {
 			if err != nil {
 				return errors.ErrUnauthorised
 			}
-			ctx := auth.WithClientId(ss.Context(), clientId)
+			ctx := auth.WithClientId(ss.Context(), types.UUID{UUID: clientId})
 			ss = &serverStream{
 				ServerStream: ss,
 				ctx:          ctx,
