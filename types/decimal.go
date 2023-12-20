@@ -9,10 +9,7 @@ type Decimal struct {
 	decimal.Decimal
 }
 
-func (m *Decimal) MarshalProto() (*common.Decimal, error) {
-	if m == nil {
-		return nil, nil
-	}
+func (m Decimal) MarshalProto() (*common.Decimal, error) {
 	return &common.Decimal{
 		Decimal: m.String(),
 	}, nil

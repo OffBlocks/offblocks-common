@@ -82,6 +82,16 @@ func TestAssetId(t *testing.T) {
 			t.Fatalf("Failed to unmarshal to json")
 		}
 
+		pb, err := a.MarshalProto()
+		if err != nil {
+			t.Errorf("Failed to marshal to proto")
+		}
+
+		a = blockchain.AssetId{}
+		if err := a.UnmarshalProto(pb); err != nil {
+			t.Errorf("Failed to unmarshal from proto")
+		}
+
 		if a.String() != tc.id {
 			t.Fatalf("Unmarshalled asset id invalid")
 		}

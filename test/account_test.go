@@ -67,6 +67,16 @@ func TestAccountId(t *testing.T) {
 			t.Errorf("Failed to unmarshal to json")
 		}
 
+		pb, err := a.MarshalProto()
+		if err != nil {
+			t.Errorf("Failed to marshal to proto")
+		}
+
+		a = blockchain.AccountId{}
+		if err := a.UnmarshalProto(pb); err != nil {
+			t.Errorf("Failed to unmarshal from proto")
+		}
+
 		if a.String() != tc.id {
 			t.Errorf("Unmarshalled account id invalid")
 		}

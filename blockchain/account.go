@@ -139,6 +139,19 @@ func (a AccountId) MarshalJSON() ([]byte, error) {
 	return []byte(str), nil
 }
 
+func (a *AccountId) UnmarshalProto(pb string) error {
+	accountId, err := ParseAccountId(pb)
+	if err != nil {
+		return err
+	}
+	*a = accountId
+	return nil
+}
+
+func (a AccountId) MarshalProto() (string, error) {
+	return a.String(), nil
+}
+
 func (a AccountId) Value() (driver.Value, error) {
 	return a.String(), nil
 }

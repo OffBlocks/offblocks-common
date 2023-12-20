@@ -140,6 +140,19 @@ func (c ChainId) MarshalJSON() ([]byte, error) {
 	return []byte(str), nil
 }
 
+func (c *ChainId) UnmarshalProto(pb string) error {
+	chainId, err := ParseChainId(pb)
+	if err != nil {
+		return err
+	}
+	*c = chainId
+	return nil
+}
+
+func (c ChainId) MarshalProto() (string, error) {
+	return c.String(), nil
+}
+
 func (c ChainId) Value() (driver.Value, error) {
 	return c.String(), nil
 }

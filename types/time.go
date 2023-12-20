@@ -10,10 +10,7 @@ type Time struct {
 	time.Time
 }
 
-func (m *Time) MarshalProto() (*timestamppb.Timestamp, error) {
-	if m == nil {
-		return nil, nil
-	}
+func (m Time) MarshalProto() (*timestamppb.Timestamp, error) {
 	pb := timestamppb.New(m.Time.UTC())
 	return pb, nil
 }

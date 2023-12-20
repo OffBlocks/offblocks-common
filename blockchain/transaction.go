@@ -139,6 +139,19 @@ func (t TransactionId) MarshalJSON() ([]byte, error) {
 	return []byte(str), nil
 }
 
+func (t *TransactionId) UnmarshalProto(pb string) error {
+	transactionid, err := ParseTransactionId(pb)
+	if err != nil {
+		return err
+	}
+	*t = transactionid
+	return nil
+}
+
+func (t TransactionId) MarshalProto() (string, error) {
+	return t.String(), nil
+}
+
 func (t TransactionId) Value() (driver.Value, error) {
 	return t.String(), nil
 }

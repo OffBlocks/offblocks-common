@@ -151,6 +151,19 @@ func (a AssetId) MarshalJSON() ([]byte, error) {
 	return []byte(str), nil
 }
 
+func (a *AssetId) UnmarshalProto(pb string) error {
+	assetId, err := ParseAssetId(pb)
+	if err != nil {
+		return err
+	}
+	*a = assetId
+	return nil
+}
+
+func (a AssetId) MarshalProto() (string, error) {
+	return a.String(), nil
+}
+
 func (a AssetId) Value() (driver.Value, error) {
 	return a.String(), nil
 }

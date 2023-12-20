@@ -9,10 +9,7 @@ type UUID struct {
 	uuid.UUID
 }
 
-func (m *UUID) MarshalProto() (*common.UUID, error) {
-	if m == nil {
-		return nil, nil
-	}
+func (m UUID) MarshalProto() (*common.UUID, error) {
 	bytes, err := m.MarshalBinary()
 	if err != nil {
 		return nil, err
