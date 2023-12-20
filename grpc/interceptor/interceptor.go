@@ -66,14 +66,13 @@ func ClientIdPropagationUnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	) (interface{}, error) {
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
 			clientIdStr, ok := md[string(auth.ClientIdKey)]
-			if !ok {
-				return nil, errors.ErrUnauthorised
+			if ok {
+				clientId, err := uuid.Parse(clientIdStr[0])
+				if err != nil {
+					return nil, errors.ErrUnauthorised
+				}
+				ctx = auth.WithClientId(ctx, types.UUID{UUID: clientId})
 			}
-			clientId, err := uuid.Parse(clientIdStr[0])
-			if err != nil {
-				return nil, errors.ErrUnauthorised
-			}
-			ctx = auth.WithClientId(ctx, types.UUID{UUID: clientId})
 		}
 		return handler(ctx, req)
 	}
@@ -87,15 +86,15 @@ func ClientIdPropagationStreamServerInterceptor() grpc.StreamServerInterceptor {
 		handler grpc.StreamHandler,
 	) error {
 		if md, ok := metadata.FromIncomingContext(ss.Context()); ok {
+			ctx := ss.Context()
 			clientIdStr, ok := md[string(auth.ClientIdKey)]
-			if !ok {
-				return errors.ErrUnauthorised
+			if ok {
+				clientId, err := uuid.Parse(clientIdStr[0])
+				if err != nil {
+					return errors.ErrUnauthorised
+				}
+				ctx = auth.WithClientId(ctx, types.UUID{UUID: clientId})
 			}
-			clientId, err := uuid.Parse(clientIdStr[0])
-			if err != nil {
-				return errors.ErrUnauthorised
-			}
-			ctx := auth.WithClientId(ss.Context(), types.UUID{UUID: clientId})
 			ss = &serverStream{
 				ServerStream: ss,
 				ctx:          ctx,
