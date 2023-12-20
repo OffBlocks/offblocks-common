@@ -10,37 +10,41 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func ClientIdPropagationUnaryClientInterceptor(
-	ctx context.Context,
-	method string,
-	req interface{},
-	reply interface{},
-	cc *grpc.ClientConn,
-	invoker grpc.UnaryInvoker,
-	opts ...grpc.CallOption,
-) error {
-	clientId, err := auth.Context{Context: ctx}.ClientId()
-	if err != nil {
-		return err
+func ClientIdPropagationUnaryClientInterceptor() grpc.UnaryClientInterceptor {
+	return func(
+		ctx context.Context,
+		method string,
+		req interface{},
+		reply interface{},
+		cc *grpc.ClientConn,
+		invoker grpc.UnaryInvoker,
+		opts ...grpc.CallOption,
+	) error {
+		clientId, err := auth.Context{Context: ctx}.ClientId()
+		if err != nil {
+			return err
+		}
+		ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
+		return invoker(ctx, method, req, reply, cc, opts...)
 	}
-	ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
-	return invoker(ctx, method, req, reply, cc, opts...)
 }
 
-func ClientIdPropagationStreamClientInterceptor(
-	ctx context.Context,
-	desc *grpc.StreamDesc,
-	cc *grpc.ClientConn,
-	method string,
-	streamer grpc.Streamer,
-	opts ...grpc.CallOption,
-) (grpc.ClientStream, error) {
-	clientId, err := auth.Context{Context: ctx}.ClientId()
-	if err != nil {
-		return nil, err
+func ClientIdPropagationStreamClientInterceptor() grpc.StreamClientInterceptor {
+	return func(
+		ctx context.Context,
+		desc *grpc.StreamDesc,
+		cc *grpc.ClientConn,
+		method string,
+		streamer grpc.Streamer,
+		opts ...grpc.CallOption,
+	) (grpc.ClientStream, error) {
+		clientId, err := auth.Context{Context: ctx}.ClientId()
+		if err != nil {
+			return nil, err
+		}
+		ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
+		return streamer(ctx, desc, cc, method, opts...)
 	}
-	ctx = metadata.AppendToOutgoingContext(ctx, string(auth.ClientIdKey), clientId.String())
-	return streamer(ctx, desc, cc, method, opts...)
 }
 
 type serverStream struct {
