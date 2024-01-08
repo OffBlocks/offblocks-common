@@ -1,7 +1,6 @@
 package types
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"net/url"
@@ -83,23 +82,24 @@ func (m *URL) UnmarshalProto(pb *common.URL) error {
 	return nil
 }
 
-func (m URL) Value() (driver.Value, error) {
-	return m.String(), nil
+func (u URL) Value() (driver.Value, error) {
+	return u.String(), nil
 }
 
-func (m *URL) Scan(src interface{}) error {
-	var i sql.NullString
-	if err := i.Scan(src); err != nil {
-		return fmt.Errorf("scanning URL: %w", err)
+func (u *URL) Scan(value interface{}) error {
+	var us string
+	switch v := value.(type) {
+	case []byte:
+		us = string(v)
+	case string:
+		us = v
+	default:
+		return fmt.Errorf("failed to parse URL: %s", value)
 	}
-
-	if !i.Valid {
-		return nil
-	}
-
-	if _, err := m.Parse(i.String); err != nil {
+	uu, err := Parse(us)
+	if err != nil {
 		return err
 	}
-
+	*u = uu
 	return nil
 }
