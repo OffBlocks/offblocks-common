@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/offblocks/offblocks-common/util"
 )
 
 type TransactionId struct {
@@ -115,7 +117,7 @@ func (t *TransactionId) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	str, err := unquoteIfQuoted(data)
+	str, err := util.UnquoteIfQuoted(data)
 	if err != nil {
 		return fmt.Errorf("error decoding string '%s': %s", data, err)
 	}

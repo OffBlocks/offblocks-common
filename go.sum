@@ -1,5 +1,5 @@
-buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240105123016-b11dc398944f.1 h1:2dY5WA6WQOC/RFvH73cAXJRGS0QREI9t35ck9Admx8w=
-buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240105123016-b11dc398944f.1/go.mod h1:QuFAd8ybtbNiuGkpfxADNvzjM04VneIVz01O1KG8KPQ=
+buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240108173552-ca41dfeb4bc7.1 h1:LcwrhmhM08RdPPKJ4FM2/1NkBPMBY1mqSZOLIkR8N+Y=
+buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240108173552-ca41dfeb4bc7.1/go.mod h1:QuFAd8ybtbNiuGkpfxADNvzjM04VneIVz01O1KG8KPQ=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
