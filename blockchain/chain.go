@@ -25,18 +25,14 @@ var (
 
 func NewChainId(namespace, reference string) (ChainId, error) {
 	cID := ChainId{namespace, reference}
-	if err := cID.Validate(); err != nil {
+	if err := cID.validate(); err != nil {
 		return ChainId{}, err
 	}
 
 	return cID, nil
 }
 
-func UnsafeChainId(namespace, reference string) ChainId {
-	return ChainId{namespace, reference}
-}
-
-func (c ChainId) Validate() error {
+func (c ChainId) validate() error {
 	if ok := chainNamespaceRegex.Match([]byte(c.Namespace)); !ok {
 		return errors.New("chain namespace does not match spec")
 	}
@@ -48,13 +44,12 @@ func (c ChainId) Validate() error {
 	return nil
 }
 
+// String returns the string form of chain id, namespace:reference
 func (c ChainId) String() string {
-	if err := c.Validate(); err != nil {
-		panic(err)
-	}
 	return c.Namespace + ":" + c.Reference
 }
 
+// Parse parses a string into a chain id from the string form, namespace:reference
 func (c *ChainId) Parse(s string) error {
 	split := strings.SplitN(s, ":", 2)
 	if len(split) != 2 {
@@ -62,19 +57,22 @@ func (c *ChainId) Parse(s string) error {
 	}
 
 	*c = ChainId{split[0], split[1]}
-	if err := c.Validate(); err != nil {
+	if err := c.validate(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// MustParse parses a string into a chain id from the string form, namespace:reference
+// and panics if there is an error
 func (c *ChainId) MustParse(s string) {
 	if err := c.Parse(s); err != nil {
 		panic(err)
 	}
 }
 
+// ParseChainId parses a string into a chain id from the string form, namespace:reference
 func ParseChainId(s string) (ChainId, error) {
 	var c ChainId
 	err := c.Parse(s)
@@ -85,6 +83,8 @@ func ParseChainId(s string) (ChainId, error) {
 	return c, nil
 }
 
+// MustParseChainId parses a string into a chain id from the string form, namespace:reference
+// and panics if there is an error
 func MustParseChainId(s string) ChainId {
 	var c ChainId
 	c.MustParse(s)
@@ -105,10 +105,6 @@ func (c *ChainId) UnmarshalText(data []byte) error {
 // MarshalText implements the encoding.TextMarshaler interface for XML
 // serialization
 func (c ChainId) MarshalText() ([]byte, error) {
-	if err := c.Validate(); err != nil {
-		return nil, err
-	}
-
 	return []byte(c.String()), nil
 }
 
@@ -133,10 +129,6 @@ func (c *ChainId) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (c ChainId) MarshalJSON() ([]byte, error) {
-	if err := c.Validate(); err != nil {
-		return nil, err
-	}
-
 	str := "\"" + c.String() + "\""
 
 	return []byte(str), nil

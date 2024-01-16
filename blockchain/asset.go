@@ -26,18 +26,14 @@ var (
 
 func NewAssetId(chainID ChainId, namespace, reference string) (AssetId, error) {
 	aID := AssetId{chainID, namespace, reference}
-	if err := aID.Validate(); err != nil {
+	if err := aID.validate(); err != nil {
 		return AssetId{}, err
 	}
 
 	return aID, nil
 }
 
-func UnsafeAssetId(chainID ChainId, namespace, reference string) AssetId {
-	return AssetId{chainID, namespace, reference}
-}
-
-func (a AssetId) Validate() error {
+func (a AssetId) validate() error {
 	if ok := assetNamespaceRegex.Match([]byte(a.Namespace)); !ok {
 		return errors.New("asset namespace does not match spec")
 	}
@@ -49,13 +45,12 @@ func (a AssetId) Validate() error {
 	return nil
 }
 
+// String returns the string form of asset id, chain_namespace:chain_reference/namespace:reference
 func (a AssetId) String() string {
-	if err := a.Validate(); err != nil {
-		panic(err)
-	}
 	return a.ChainId.String() + "/" + a.Namespace + ":" + a.Reference
 }
 
+// Parse parses a string into a asset id from the string form, chain_namespace:chain_reference/namespace:reference
 func (a *AssetId) Parse(s string) error {
 	components := strings.SplitN(s, "/", 2)
 	if len(components) != 2 {
@@ -73,19 +68,22 @@ func (a *AssetId) Parse(s string) error {
 	}
 
 	*a = AssetId{*cID, asset[0], asset[1]}
-	if err := a.Validate(); err != nil {
+	if err := a.validate(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// MustParse parses a string into a asset id from the string form, chain_namespace:chain_reference/namespace:reference
+// and panics if there is an error
 func (a *AssetId) MustParse(s string) {
 	if err := a.Parse(s); err != nil {
 		panic(err)
 	}
 }
 
+// ParseAssetId parses a string into a asset id from the string form, chain_namespace:chain_reference/namespace:reference
 func ParseAssetId(s string) (AssetId, error) {
 	var a AssetId
 	err := a.Parse(s)
@@ -96,6 +94,8 @@ func ParseAssetId(s string) (AssetId, error) {
 	return a, nil
 }
 
+// MustParseAssetId parses a string into a asset id from the string form, chain_namespace:chain_reference/namespace:reference
+// and panics if there is an error
 func MustParseAssetId(s string) AssetId {
 	var a AssetId
 	a.MustParse(s)
@@ -116,10 +116,6 @@ func (a *AssetId) UnmarshalText(data []byte) error {
 // MarshalText implements the encoding.TextMarshaler interface for XML
 // serialization
 func (a AssetId) MarshalText() ([]byte, error) {
-	if err := a.Validate(); err != nil {
-		return nil, err
-	}
-
 	return []byte(a.String()), nil
 }
 
@@ -144,10 +140,6 @@ func (a *AssetId) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (a AssetId) MarshalJSON() ([]byte, error) {
-	if err := a.Validate(); err != nil {
-		return nil, err
-	}
-
 	str := "\"" + a.String() + "\""
 
 	return []byte(str), nil

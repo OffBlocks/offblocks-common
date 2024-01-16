@@ -24,19 +24,15 @@ var (
 
 func NewAccountId(chainId ChainId, address string) (AccountId, error) {
 	aID := AccountId{chainId, address}
-	if err := aID.Validate(); err != nil {
+	if err := aID.validate(); err != nil {
 		return AccountId{}, err
 	}
 
 	return aID, nil
 }
 
-func UnsafeAccountId(chainId ChainId, address string) AccountId {
-	return AccountId{chainId, address}
-}
-
-func (a AccountId) Validate() error {
-	if err := a.ChainId.Validate(); err != nil {
+func (a AccountId) validate() error {
+	if err := a.ChainId.validate(); err != nil {
 		return err
 	}
 
@@ -47,13 +43,12 @@ func (a AccountId) Validate() error {
 	return nil
 }
 
+// String returns the string form of account id, chain_namespace:chain_reference:address
 func (a AccountId) String() string {
-	if err := a.Validate(); err != nil {
-		panic(err)
-	}
 	return a.ChainId.String() + ":" + a.Address
 }
 
+// Parse parses a string into a account id from the string form, chain_namespace:chain_reference:address
 func (a *AccountId) Parse(s string) error {
 	split := strings.SplitN(s, ":", 3)
 	if len(split) != 3 {
@@ -61,19 +56,22 @@ func (a *AccountId) Parse(s string) error {
 	}
 
 	*a = AccountId{ChainId{split[0], split[1]}, split[2]}
-	if err := a.Validate(); err != nil {
+	if err := a.validate(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// MustParse parses a string into a account id from the string form, chain_namespace:chain_reference:address
+// and panics if there is an error
 func (c *AccountId) MustParse(s string) {
 	if err := c.Parse(s); err != nil {
 		panic(err)
 	}
 }
 
+// ParseAccountId parses a string into a account id from the string form, chain_namespace:chain_reference:address
 func ParseAccountId(s string) (AccountId, error) {
 	var a AccountId
 	err := a.Parse(s)
@@ -84,6 +82,8 @@ func ParseAccountId(s string) (AccountId, error) {
 	return a, nil
 }
 
+// MustParseAccountId parses a string into a account id from the string form, chain_namespace:chain_reference:address
+// and panics if there is an error
 func MustParseAccountId(s string) AccountId {
 	var a AccountId
 	a.MustParse(s)
@@ -104,10 +104,6 @@ func (a *AccountId) UnmarshalText(data []byte) error {
 // MarshalText implements the encoding.TextMarshaler interface for XML
 // serialization
 func (a AccountId) MarshalText() ([]byte, error) {
-	if err := a.Validate(); err != nil {
-		return nil, err
-	}
-
 	return []byte(a.String()), nil
 }
 
@@ -132,10 +128,6 @@ func (a *AccountId) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (a AccountId) MarshalJSON() ([]byte, error) {
-	if err := a.Validate(); err != nil {
-		return nil, err
-	}
-
 	str := "\"" + a.String() + "\""
 
 	return []byte(str), nil

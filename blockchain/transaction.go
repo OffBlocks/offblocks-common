@@ -23,20 +23,16 @@ var (
 )
 
 func NewTransactionId(ChainId ChainId, hash string) (TransactionId, error) {
-	aID := TransactionId{ChainId, hash}
-	if err := aID.Validate(); err != nil {
+	tID := TransactionId{ChainId, hash}
+	if err := tID.validate(); err != nil {
 		return TransactionId{}, err
 	}
 
-	return aID, nil
+	return tID, nil
 }
 
-func UnsafeTransactionId(chainId ChainId, hash string) TransactionId {
-	return TransactionId{chainId, hash}
-}
-
-func (t TransactionId) Validate() error {
-	if err := t.ChainId.Validate(); err != nil {
+func (t TransactionId) validate() error {
+	if err := t.ChainId.validate(); err != nil {
 		return err
 	}
 
@@ -47,13 +43,12 @@ func (t TransactionId) Validate() error {
 	return nil
 }
 
+// String returns the string form of transaction id, chain_namespace:chain_reference:hash
 func (t TransactionId) String() string {
-	if err := t.Validate(); err != nil {
-		panic(err)
-	}
 	return t.ChainId.String() + ":" + t.Hash
 }
 
+// Parse parses a string into a transaction id from the string form, chain_namespace:chain_reference:hash
 func (t *TransactionId) Parse(s string) error {
 	split := strings.SplitN(s, ":", 3)
 	if len(split) != 3 {
@@ -61,19 +56,22 @@ func (t *TransactionId) Parse(s string) error {
 	}
 
 	*t = TransactionId{ChainId{split[0], split[1]}, split[2]}
-	if err := t.Validate(); err != nil {
+	if err := t.validate(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// MustParse parses a string into a transaction id from the string form, chain_namespace:chain_reference:hash
+// and panics if there is an error
 func (c *TransactionId) MustParse(s string) {
 	if err := c.Parse(s); err != nil {
 		panic(err)
 	}
 }
 
+// ParseTransactionId parses a string into a transaction id from the string form, chain_namespace:chain_reference:hash
 func ParseTransactionId(s string) (TransactionId, error) {
 	var t TransactionId
 	err := t.Parse(s)
@@ -84,6 +82,8 @@ func ParseTransactionId(s string) (TransactionId, error) {
 	return t, nil
 }
 
+// MustParseTransactionId parses a string into a transaction id from the string form, chain_namespace:chain_reference:hash
+// and panics if there is an error
 func MustParseTransactionId(s string) TransactionId {
 	var t TransactionId
 	t.MustParse(s)
@@ -104,10 +104,6 @@ func (t *TransactionId) UnmarshalText(data []byte) error {
 // MarshalText implements the encoding.TextMarshaler interface for XML
 // serialization
 func (t TransactionId) MarshalText() ([]byte, error) {
-	if err := t.Validate(); err != nil {
-		return nil, err
-	}
-
 	return []byte(t.String()), nil
 }
 
@@ -132,10 +128,6 @@ func (t *TransactionId) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (t TransactionId) MarshalJSON() ([]byte, error) {
-	if err := t.Validate(); err != nil {
-		return nil, err
-	}
-
 	str := "\"" + t.String() + "\""
 
 	return []byte(str), nil
