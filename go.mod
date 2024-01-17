@@ -3,7 +3,7 @@ module github.com/offblocks/offblocks-common
 go 1.21.4
 
 require (
-	buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240114131231-31b0aff70f9a.1
+	buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240117134153-3af3ab00c8fe.1
 	github.com/google/uuid v1.5.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
