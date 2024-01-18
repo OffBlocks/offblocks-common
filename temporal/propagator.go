@@ -13,9 +13,8 @@ import (
 // clientIdPropagator implements the clientId context propagator
 type clientIdPropagator struct{}
 
-// NewContextPropagator returns a context propagator that propagates a set of
-// string key-value pairs across a workflow
-func NewContextPropagator() workflow.ContextPropagator {
+// NewClientIdContextPropagator returns a context propagator that propagates client ID across a workflow
+func NewClientIdContextPropagator() workflow.ContextPropagator {
 	return &clientIdPropagator{}
 }
 
