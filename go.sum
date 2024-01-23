@@ -1,5 +1,5 @@
-buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240118151941-6b3a26946cd8.1 h1:tKuImM1wfsA14rdzSGumHvU7wA3vHr5fwvKrhsEov3U=
-buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240118151941-6b3a26946cd8.1/go.mod h1:QuFAd8ybtbNiuGkpfxADNvzjM04VneIVz01O1KG8KPQ=
+buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240123133924-c266684a3dae.1 h1:YpaN1o2l6/L6xPo8PqnL18RXF8d8dK7aSfYzD9234O0=
+buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240123133924-c266684a3dae.1/go.mod h1:QuFAd8ybtbNiuGkpfxADNvzjM04VneIVz01O1KG8KPQ=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
