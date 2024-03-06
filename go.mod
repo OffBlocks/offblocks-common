@@ -3,14 +3,14 @@ module github.com/offblocks/offblocks-common
 go 1.21.4
 
 require (
-	buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240123133924-c266684a3dae.1
+	buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.33.0-20240123133924-c266684a3dae.1
 	github.com/google/uuid v1.6.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
 	go.temporal.io/api v1.26.0
 	go.temporal.io/sdk v1.25.1
 	google.golang.org/grpc v1.61.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
