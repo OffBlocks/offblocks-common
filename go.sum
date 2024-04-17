@@ -1,5 +1,5 @@
-buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240123133924-c266684a3dae.1 h1:YpaN1o2l6/L6xPo8PqnL18RXF8d8dK7aSfYzD9234O0=
-buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.32.0-20240123133924-c266684a3dae.1/go.mod h1:QuFAd8ybtbNiuGkpfxADNvzjM04VneIVz01O1KG8KPQ=
+buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.33.0-20240123133924-c266684a3dae.1 h1:PI4xwI9r2E8JmlnF4mqWq61mB0su5cgzYJi0B6AtfNo=
+buf.build/gen/go/offblocks/offblocks-proto/protocolbuffers/go v1.33.0-20240123133924-c266684a3dae.1/go.mod h1:uEFwlb7+He6px13CQef6SiHth3eXnX8KqDrrx2n5cro=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -157,7 +157,6 @@ google.golang.org/grpc v1.29.1/go.mod h1:itym6AZVZYACWQqET3MqgPpjcuV5QH3BxFS3Iji
 google.golang.org/grpc v1.63.2 h1:MUeiw1B2maTVZthpU5xvASfTh3LDbxHd6IJ6QQVU+xM=
 google.golang.org/grpc v1.63.2/go.mod h1:WAX/8DgncnokcFUldAxq7GeB5DXHDbMF+lLvDomNkRA=
 google.golang.org/protobuf v1.26.0-rc.1/go.mod h1:jlhhOSvTdKEhbULTjvd4ARK9grFBp09yW+WbY/TyQbw=
-google.golang.org/protobuf v1.32.0/go.mod h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHhKbcUYpos=
 google.golang.org/protobuf v1.33.0 h1:uNO2rsAINq/JlFpSdYEKIZ0uKD/R9cpdv0T+yoGwGmI=
 google.golang.org/protobuf v1.33.0/go.mod h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHhKbcUYpos=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
